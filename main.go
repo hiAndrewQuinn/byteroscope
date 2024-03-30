@@ -2,20 +2,29 @@ package main
 
 import (
 	"fmt"
+  "log"
 	"os"
 
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-type model struct{}
-
 func main() {
+	logfilePath := os.Getenv("BUBBLETEA_LOG")
+  fmt.Println(logfilePath)
+	if logfilePath != "" {
+		if _, err := tea.LogToFile(logfilePath, "simple"); err != nil {
+			log.Fatal(err)
+		}
+	}
+
 	p := tea.NewProgram(model{})
-	if err := p.Start(); err != nil {
+	if _, err := p.Run(); err != nil {
 		fmt.Printf("Alas, there's been an error: %v", err)
 		os.Exit(1)
 	}
 }
+
+type model struct{}
 
 func (m model) Init() tea.Cmd {
 	// Return a command to perform when the program starts.
@@ -24,12 +33,17 @@ func (m model) Init() tea.Cmd {
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	// This function is called when messages are received.
-	// Return the updated model and an optional command.
-	return m, tea.Quit
+  switch msg := msg.(type) {
+    case tea.KeyMsg:
+      if msg.String() == "q" {
+        return m, tea.Quit
+      }
+    }
+
+  return m, nil
 }
 
 func (m model) View() string {
 	// Return a string that will be rendered in the terminal.
-	return "Hello, Bubble Tea!"
+	return "Hello, Bubble Tea!\nPress 'q' to quit.";
 }
