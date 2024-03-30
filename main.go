@@ -17,7 +17,9 @@ func main() {
 		}
 	}
 
-	p := tea.NewProgram(model{})
+  log.Println("Starting program")
+
+	p := tea.NewProgram(model{}, tea.WithAltScreen())
 	if _, err := p.Run(); err != nil {
 		fmt.Printf("Alas, there's been an error: %v", err)
 		os.Exit(1)
@@ -35,7 +37,9 @@ func (m model) Init() tea.Cmd {
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
   switch msg := msg.(type) {
     case tea.KeyMsg:
+      log.Println("Key pressed:", msg.String())
       if msg.String() == "q" {
+        log.Println("Quitting program")
         return m, tea.Quit
       }
     }
@@ -45,5 +49,5 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m model) View() string {
 	// Return a string that will be rendered in the terminal.
-	return "Hello, Bubble Tea!\nPress 'q' to quit.";
+	return "Hello, Bubble Tea!\n\nPress 'q' to quit.";
 }
